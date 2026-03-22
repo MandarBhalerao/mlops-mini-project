@@ -6,6 +6,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check env presence
+        run: |
+          python - <<'PY'
+          import os
+          print("DAGSHUB_PAT exists:", bool(os.getenv("DAGSHUB_PAT")))
+          print("MLFLOW_TRACKING_URI exists:", bool(os.getenv("MLFLOW_TRACKING_URI")))
+          PY
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+
+    
       - name: checkout code
         uses: actions/checkout@v3
 
