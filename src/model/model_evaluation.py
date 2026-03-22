@@ -115,6 +115,12 @@ def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
         raise
 
 def main():
+    
+    print("Tracking URI from mlflow:", mlflow.get_tracking_uri())
+    print("DAGSHUB_PAT present:", bool(os.getenv("DAGSHUB_PAT")))
+    print("MLFLOW_TRACKING_USERNAME present:", bool(os.getenv("MLFLOW_TRACKING_USERNAME")))
+    print("MLFLOW_TRACKING_PASSWORD present:", bool(os.getenv("MLFLOW_TRACKING_PASSWORD")))
+    
     mlflow.set_experiment("dvc-pipeline")
     with mlflow.start_run() as run:  # Start an MLflow run
         try:
