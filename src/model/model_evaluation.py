@@ -20,7 +20,7 @@ os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
 os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
 dagshub_url = "https://dagshub.com"
-repo_owner = "mandar02bhalerao"
+repo_owner = "campusx-official"
 repo_name = "mlops-mini-project"
 
 # Set up MLflow tracking URI
@@ -104,9 +104,6 @@ def save_metrics(metrics: dict, file_path: str) -> None:
         raise
 
 def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
-    print('------------------------------------')
-    print(model_path)
-    print(file_path)
     """Save the model run ID and path to a JSON file."""
     try:
         model_info = {'run_id': run_id, 'model_path': model_path}
@@ -118,45 +115,43 @@ def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
         raise
 
 def main():
+    mlflow.set_experiment("dvc-pipeline")
+    with mlflow.start_run() as run:  # Start an MLflow run
         try:
-            mlflow.set_experiment("dvc-pipeline")
-            with mlflow.start_run() as run:  # Start an MLflow run
-                clf = load_model('./models/model.pkl')
-                test_data = load_data('./data/processed/test_bow.csv')
-                
-                X_test = test_data.iloc[:, :-1].values
-                y_test = test_data.iloc[:, -1].values
+            clf = load_model('./models/model.pkl')
+            test_data = load_data('./data/processed/test_bow.csv')
+            
+            X_test = test_data.iloc[:, :-1].values
+            y_test = test_data.iloc[:, -1].values
 
-                metrics = evaluate_model(clf, X_test, y_test)
-                
-                save_metrics(metrics, 'reports/metrics.json')
-                
-                # Log metrics to MLflow
-                for metric_name, metric_value in metrics.items():
-                    mlflow.log_metric(metric_name, metric_value)
-                
-                # Log model parameters to MLflow
-                if hasattr(clf, 'get_params'):
-                    params = clf.get_params()
-                    for param_name, param_value in params.items():
-                        mlflow.log_param(param_name, param_value)
-                
-                # Log model to MLflow
-                mlflow.sklearn.log_model(clf, "model")
-                
-                # Save model info
-                save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
-                
-                # Log the metrics file to MLflow
-                mlflow.log_artifact('reports/metrics.json')
+            metrics = evaluate_model(clf, X_test, y_test)
+            
+            save_metrics(metrics, 'reports/metrics.json')
+            
+            # Log metrics to MLflow
+            for metric_name, metric_value in metrics.items():
+                mlflow.log_metric(metric_name, metric_value)
+            
+            # Log model parameters to MLflow
+            if hasattr(clf, 'get_params'):
+                params = clf.get_params()
+                for param_name, param_value in params.items():
+                    mlflow.log_param(param_name, param_value)
+            
+            # Log model to MLflow
+            mlflow.sklearn.log_model(clf, "model")
+            
+            # Save model info
+            save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
+            
+            # Log the metrics file to MLflow
+            mlflow.log_artifact('reports/metrics.json')
 
-                # Log the model info file to MLflow
-                # mlflow.log_artifact('reports/model_info.json')
-                mlflow.log_artifact('reports/experiment_info.json')
-                
+            # Log the model info file to MLflow
+            mlflow.log_artifact('reports/model_info.json')
 
-                # Log the evaluation errors log file to MLflow
-                mlflow.log_artifact('model_evaluation_errors.log')
+            # Log the evaluation errors log file to MLflow
+            mlflow.log_artifact('model_evaluation_errors.log')
         except Exception as e:
             logger.error('Failed to complete the model evaluation process: %s', e)
             print(f"Error: {e}")
