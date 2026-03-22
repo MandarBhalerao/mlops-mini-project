@@ -5,6 +5,7 @@ import mlflow
 import logging
 
 import dagshub
+import os
 
 # mlflow.set_tracking_uri('https://dagshub.com/mandar02bhalerao/mlops-mini-project.mlflow')
 # dagshub.init(repo_owner='mandar02bhalerao', repo_name='mlops-mini-project', mlflow=True)
