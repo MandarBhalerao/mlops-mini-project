@@ -7,23 +7,23 @@ import logging
 import dagshub
 import os
 
-# mlflow.set_tracking_uri('https://dagshub.com/mandar02bhalerao/mlops-mini-project.mlflow')
-# dagshub.init(repo_owner='mandar02bhalerao', repo_name='mlops-mini-project', mlflow=True)
+mlflow.set_tracking_uri('https://dagshub.com/mandar02bhalerao/mlops-mini-project.mlflow')
+dagshub.init(repo_owner='mandar02bhalerao', repo_name='mlops-mini-project', mlflow=True)
 
-# Set up DagsHub credentials for MLflow tracking
-dagshub_token = os.getenv("DAGSHUB_PAT")
-if not dagshub_token:
-    raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
+# # Set up DagsHub credentials for MLflow tracking
+# dagshub_token = os.getenv("DAGSHUB_PAT")
+# if not dagshub_token:
+#     raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
 
-os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
-os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
-dagshub_url = "https://dagshub.com"
-repo_owner = "mandar02bhalerao"
-repo_name = "mlops-mini-project"
+# dagshub_url = "https://dagshub.com"
+# repo_owner = "mandar02bhalerao"
+# repo_name = "mlops-mini-project"
 
-# Set up MLflow tracking URI
-mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
+# # Set up MLflow tracking URI
+# mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
 
 # logging configuration
@@ -60,8 +60,10 @@ def load_model_info(file_path: str) -> dict:
 def register_model(model_name: str, model_info: dict):
     """Register the model to the MLflow Model Registry."""
     try:
-        model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        # model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
+        model_uri = f"runs:/{model_info['run_id']}/model"
+        
+        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         print(model_uri)
         
         # Register the model

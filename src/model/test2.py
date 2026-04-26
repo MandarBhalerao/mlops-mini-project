@@ -9,9 +9,22 @@ import logging
 import mlflow
 import mlflow.sklearn
 import dagshub
+import os
 
-mlflow.set_tracking_uri('https://dagshub.com/mandar02bhalerao/mlops-mini-project.mlflow')
-dagshub.init(repo_owner='mandar02bhalerao', repo_name='mlops-mini-project', mlflow=True)
+# Set up DagsHub credentials for MLflow tracking
+dagshub_token = os.getenv("DAGSHUB_PAT")
+if not dagshub_token:
+    raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
+
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "campusx-official"
+repo_name = "mlops-mini-project"
+
+# Set up MLflow tracking URI
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
 # logging configuration
 logger = logging.getLogger('model_evaluation')
@@ -91,9 +104,6 @@ def save_metrics(metrics: dict, file_path: str) -> None:
         raise
 
 def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
-    print('------------------------------------')
-    print(model_path)
-    print(file_path)
     """Save the model run ID and path to a JSON file."""
     try:
         model_info = {'run_id': run_id, 'model_path': model_path}
@@ -129,18 +139,16 @@ def main():
                     mlflow.log_param(param_name, param_value)
             
             # Log model to MLflow
-            mlflow.sklearn.log_model(clf, "models")
+            mlflow.sklearn.log_model(clf, "model")
             
             # Save model info
-            save_model_info(run.info.run_id, "models", 'reports/experiment_info.json')
+            save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
             
             # Log the metrics file to MLflow
             mlflow.log_artifact('reports/metrics.json')
 
             # Log the model info file to MLflow
-            # mlflow.log_artifact('reports/model_info.json')
-            mlflow.log_artifact('reports/experiment_info.json')
-            
+            mlflow.log_artifact('reports/model_info.json')
 
             # Log the evaluation errors log file to MLflow
             mlflow.log_artifact('model_evaluation_errors.log')
